@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { firestore } from "@/firebase";
+import { auth, firestore } from "@/firebase";
+import { useAuthState } from "react-firebase-hooks/auth"
+import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
@@ -18,20 +20,40 @@ import {
   getDocs,
   query,
   setDoc,
+  where,
 } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 
 export default function Home() {
+  const [user, loading] = useAuthState(auth);
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState("");
 
-  const updatedInventory = async () => {
-    const snapshot = query(collection(firestore, "inventory"));
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/sign-in");
+    }
+  }, [loading, user, router]);
+
+  const handleSignOut = async () => {
+    signOut(auth).then(() => {
+      router.push("/sign-in")
+    })
+  }
+
+  const updatedInventory = async (userId) => {
+    const snapshot = query(
+      collection(firestore, "inventory"), 
+      where("userId", "==", userId)
+    );
     const docs = await getDocs(snapshot);
     const inventoryList = [];
     docs.forEach((doc) => {
       inventoryList.push({
-        name: doc.id,
+        name: doc.id.replace(`${userId}_`, ""),
         ...doc.data(),
       });
     });
@@ -40,21 +62,29 @@ export default function Home() {
   };
 
   const addItem = async (item) => {
-    const docRef = doc(collection(firestore, "inventory"), item);
+    if (!user) return;
+    const docRef = doc(
+      collection(firestore, "inventory"), 
+      `${user.uid}_${item}`
+    );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       const { quantity } = docSnap.data();
-      await setDoc(docRef, { quantity: quantity + 1 });
+      await setDoc(docRef, { userId: user.uid, quantity: quantity + 1 });
     } else {
-      await setDoc(docRef, { quantity: 1 });
+      await setDoc(docRef, { userId: user.uid, quantity: 1 });
     }
 
-    await updatedInventory();
+    await updatedInventory(user.uid);
   };
 
   const removeItem = async (item) => {
-    const docRef = doc(collection(firestore, "inventory"), item);
+    if (!user) return;
+    const docRef = doc(
+      collection(firestore, "inventory"), 
+      `${user.uid}_${item}`
+    );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -62,16 +92,18 @@ export default function Home() {
       if (quantity == 1) {
         await deleteDoc(docRef);
       } else {
-        await setDoc(docRef, { quantity: quantity - 1 });
+        await setDoc(docRef, { userId: user.uid, quantity: quantity - 1 });
       }
     }
 
-    await updatedInventory();
+    await updatedInventory(user.uid);
   };
 
   useEffect(() => {
-    updatedInventory();
-  }, []);
+    if (user) {
+      updatedInventory(user.uid);
+    }
+  }, [user]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -133,6 +165,14 @@ export default function Home() {
         }}
       >
         Add New Item
+      </Button>
+      <Button
+        variant="contained"
+        onClick={() => {
+          handleSignOut();
+        }}
+      >
+        Sign Out
       </Button>
       <Box border={"1px solid #333"}>
         <Box

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { auth, googleProvider } from "@/firebase";
-import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { Box, Button, Divider, TextField, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -10,11 +10,10 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import GoogleIcon from '@/public/google-icon.svg'
 import Image from "next/image";
 
-export default function SignUp() {
+export default function SignIn() {
     const [user, loading] = useAuthState(auth);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [processing, setProcessing] = useState(false);
 
@@ -26,26 +25,20 @@ export default function SignUp() {
         }
     }, [loading, user, router]);
 
-    const handleSignUp = async () => {
+    const handleSignIn = async () => {
         setError("");
         setProcessing(true);
 
-        if (!email || !password || !confirmPassword) {
+        if (!email || !password) {
             setError("All fields are required.");
-            setProcessing(false);
-            return;
-          }
-
-        if (password !== confirmPassword) {
-            setError("Passwords do not match");
             setProcessing(false);
             return;
         }
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
-            console.log("User signed up:", email)
-            router.push('/sign-in');
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log("User signed in:", email)
+            router.push('/');
         } catch (error) {
             setError(error.message);
             console.log("Error signing up:", error.message);
@@ -82,14 +75,14 @@ export default function SignUp() {
                 textAlign={"center"}
                 text
                 width={"500px"}
-                height={"615px"}
+                height={"525px"}
                 gap={4}
                 display={"flex"}
                 flexDirection={"column"}
                 alignItems={"center"}
                 bgcolor={"lightblue"}
             >
-                <Typography variant="h4" marginTop={"25px"}>Sign Up</Typography>
+                <Typography variant="h4" marginTop={"25px"}>Sign In</Typography>
                 <TextField
                     label="Email"
                     variant="outlined"
@@ -110,16 +103,6 @@ export default function SignUp() {
                         width: "400px"
                     }}
                 />
-                <TextField
-                    label="Confirm Password"
-                    type="password"
-                    variant="outlined"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    sx={{
-                        width: "400px"
-                    }}
-                />
                 {error && 
                     <Typography 
                         sx={{
@@ -133,19 +116,19 @@ export default function SignUp() {
                 }
                 <Button
                     variant="contained"
-                    onClick={handleSignUp}
+                    onClick={handleSignIn}
                     sx={{
-                        marginTop: "10px"
+                        marginTop: "10px",
                     }}
                 >
-                    {processing ? "Signing Up..." : "Sign Up"}
+                    {processing ? "Signing In..." : "Sign In"}
                 </Button>
                 <Box
                     display={'flex'}
                     gap={1}
                 >
-                    <Typography>Have an account?</Typography>
-                    <Link href={"/sign-in"} className="blue">Login with account</Link>
+                    <Typography>Don't have an account?</Typography>
+                    <Link href={"/sign-up"} className="blue">Create an account</Link>
                 </Box>
                 <Divider sx={{ width: '400px', borderColor: 'black', marginTop: "-10px"}}>or</Divider>
                 <Button
@@ -162,7 +145,7 @@ export default function SignUp() {
                         gap={1}
                     >
                         <Image src={GoogleIcon} height={35} width={35} alt='' />
-                        <Typography>Sign Up with Google</Typography>
+                        <Typography>Sign in with Google</Typography>
                     </Box>
                 </Button>
             </Box>
