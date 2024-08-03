@@ -92,6 +92,7 @@ export default function SignUp() {
                 sx={{
                     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
                     userSelect: "none",
+                    borderRadius: "8px"
                 }}
             >
                 <Typography variant="h4" marginTop={"25px"} color={"white"}>Sign Up</Typography>
