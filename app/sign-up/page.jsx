@@ -77,6 +77,7 @@ export default function SignUp() {
             display={"flex"}
             justifyContent={"center"}
             alignItems={"center"}
+            color={"white"}
         >
             <Box 
                 textAlign={"center"}
@@ -87,9 +88,13 @@ export default function SignUp() {
                 display={"flex"}
                 flexDirection={"column"}
                 alignItems={"center"}
-                bgcolor={"lightblue"}
+                bgcolor={"#1976d2"}
+                sx={{
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+                    userSelect: "none",
+                }}
             >
-                <Typography variant="h4" marginTop={"25px"}>Sign Up</Typography>
+                <Typography variant="h4" marginTop={"25px"} color={"white"}>Sign Up</Typography>
                 <TextField
                     label="Email"
                     variant="outlined"
@@ -97,7 +102,30 @@ export default function SignUp() {
                     onChange={(e) => setEmail(e.target.value)}
                     sx={{
                         width: "400px",
-                        marginTop: "5px"
+                        marginTop: "5px",
+                        '& .MuiInputLabel-root': {
+                            color: 'white',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'white', 
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#ffffff',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#ffffff', 
+                            },
+                            '& input': {
+                                color: 'white',
+                            },
+                        },
+                        "& .MuiInputLabel-outlined": {
+                            color: "white",
+                            "&.Mui-focused": {
+                            color: "white",
+                            },
+                        },
                     }}
                 />
                 <TextField
@@ -107,7 +135,27 @@ export default function SignUp() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     sx={{
-                        width: "400px"
+                        width: "400px",
+                        '& .MuiInputLabel-root': {
+                            color: 'white',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'white', 
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#ffffff',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#ffffff', 
+                            },
+                        },
+                        "& .MuiInputLabel-outlined": {
+                            color: "white",
+                            "&.Mui-focused": {
+                            color: "white",
+                            },
+                        },
                     }}
                 />
                 <TextField
@@ -117,7 +165,27 @@ export default function SignUp() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     sx={{
-                        width: "400px"
+                        width: "400px",
+                        '& .MuiInputLabel-root': {
+                            color: 'white',
+                        },
+                        '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                                borderColor: 'white', 
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#ffffff',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#ffffff', 
+                            },
+                        },
+                        "& .MuiInputLabel-outlined": {
+                            color: "white",
+                            "&.Mui-focused": {
+                            color: "white",
+                            },
+                        },
                     }}
                 />
                 {error && 
@@ -135,7 +203,12 @@ export default function SignUp() {
                     variant="contained"
                     onClick={handleSignUp}
                     sx={{
-                        marginTop: "10px"
+                        marginTop: "10px",
+                        backgroundColor: "white",
+                        color: "black",
+                        '&:hover': {
+                            backgroundColor: "#DCDCDC"
+                        }
                     }}
                 >
                     {processing ? "Signing Up..." : "Sign Up"}
@@ -145,13 +218,18 @@ export default function SignUp() {
                     gap={1}
                 >
                     <Typography>Have an account?</Typography>
-                    <Link href={"/sign-in"} className="blue">Login with account</Link>
+                    <Link href={"/sign-in"} className="custom-link">Login with account</Link>
                 </Box>
-                <Divider sx={{ width: '400px', borderColor: 'black', marginTop: "-10px"}}>or</Divider>
+                <Divider sx={{ width: '400px', marginTop: "-10px"}}>or</Divider>
                 <Button
                     sx={{
                         marginTop: "-5px",
-                        textTransform: "none"
+                        textTransform: "none",
+                        backgroundColor: "white",
+                        color: "black",
+                        '&:hover': {
+                            backgroundColor: "#DCDCDC"
+                        }
                     }}  
                     variant="contained"
                     onClick={handleGoogle}

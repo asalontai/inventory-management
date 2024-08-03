@@ -4,6 +4,15 @@
   margin: 0;
 }
 
-.blue {
-  color: blue;
+
+
+.custom-link {
+  color: #64b5f6; 
+  text-decoration: none; 
+  transition: color 0.3s, text-decoration 0.3s; 
+}
+
+.custom-link:hover {
+  color: #42a5f5;
+  text-decoration: underline; 
 }
