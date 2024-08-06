@@ -34,7 +34,6 @@ export default function Home() {
   const [inventory, setInventory] = useState([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [openPhoto, setOpenPhoto] = useState(false);
-  const [itemName, setItemName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
@@ -128,6 +127,12 @@ export default function Home() {
   const handleOpenPhoto = () => setOpenPhoto(true);
   const handleClosePhoto = () => setOpenPhoto(false);
 
+  const refreshInventory = () => {
+    if (user) {
+      updatedInventory(user.uid);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -145,7 +150,7 @@ export default function Home() {
         marginTop={5}
       >
         <AddItem open={openAdd} handleClose={handleCloseAdd} addItem={addItem} /> 
-        <CameraItem open={openPhoto} handleClose={handleClosePhoto} />
+        <CameraItem open={openPhoto} handleClose={handleClosePhoto} refreshInventory={refreshInventory} />
         <Box 
           width={"870px"}
           display={"flex"}
@@ -156,20 +161,6 @@ export default function Home() {
             display={"flex"}
             justifyContent={"space-between"}
           >
-            <Typography
-              variant="h5"
-            >
-              Inventory
-            </Typography>
-            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <Button
-              variant="contained"
-              onClick={() => {
-                handleOpenPhoto();
-              }}
-            >
-              Add With Photo
-            </Button>
             <Button
               variant="contained"
               onClick={() => {
@@ -177,6 +168,15 @@ export default function Home() {
               }}
             >
               Add New Item
+            </Button>
+            <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleOpenPhoto();
+              }}
+            >
+              Scan Item
             </Button>
           </Box>
         </Box>

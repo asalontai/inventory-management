@@ -58,7 +58,7 @@ export default function Navbar() {
           }}
           onClick={handleMain}
         >
-          Inventory Tracker
+          Pantry Tracker
         </Typography>
         {auth && (
           <div style={{ marginLeft: "auto" }}>

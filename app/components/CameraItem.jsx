@@ -1,25 +1,35 @@
 import { Box, Button, Typography, Stack, TextField, Modal, IconButton } from "@mui/material";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Camera } from "react-camera-pro";
 import CameraswitchIcon from '@mui/icons-material/Cameraswitch';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import axios from "axios";
+import { auth, firestore, storage } from "@/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
 
-export default function CameraItem({ open, handleClose }) {
+export default function CameraItem({ open, handleClose, refreshInventory }) {
     const [itemName, setItemName] = useState("");
+    const [inventory, setInventory] = useState([]);
+    const [user] = useAuthState(auth);
 
     const camera = useRef(null);
     const [image, setImage] = useState(null);
     const [isImage, setIsImage] = useState(false);
     const [cameras, setCameras] = useState([]);
-    const [currentCamera, setCurrentCamera] = useState(0);
+    const [currentCamera, setCurrentCamera] = useState(0)
+
+    useEffect(() => {
+        if (user) {
+          updatedInventory(user.uid);
+        }
+    }, [user]);
 
     const handleTakePhoto = () => {
-        if (currentCamera === 0) {
-            return;
-        }
-
         const photo = camera.current.takePhoto();
+
+        console.log(photo)
         setImage(photo);
         setIsImage(true);
     };
@@ -38,6 +48,58 @@ export default function CameraItem({ open, handleClose }) {
         setIsImage(false);
         handleClose();
     }
+
+    const addItem = async (item) => {
+        let itemName = item.toLowerCase();
+
+        if (item == "") {
+            return;
+        }
+
+        if (!user) return;
+        const docRef = doc(
+            collection(firestore, "inventory"), 
+            `${user.uid}_${itemName}`
+        );
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            const { quantity } = docSnap.data();
+            await setDoc(docRef, { userId: user.uid, quantity: quantity + 1 });
+        } else {
+            await setDoc(docRef, { userId: user.uid, quantity: 1 });
+        }
+    };
+
+    const handleConfirm = async () => {
+        try {
+            const storageRef = ref(storage, `photos/${user.uid}/${Date.now()}.png`)
+            await uploadString(storageRef, image, 'data_url');
+
+            const response = await axios.post('/api/generate', { image }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+
+            setImage("");
+            setIsImage(false);
+            handleClose();
+
+            const content = response.data.response.message.content.toLowerCase();
+
+            setItemName(content);
+
+            await addItem(content);
+
+            refreshInventory();
+
+            console.log(response.data)
+            console.log(content)
+        } catch(error) {
+            console.error(error);
+        }
+    };
     
     return (
         <Modal open={open} onClose={handleClose}>
@@ -69,7 +131,7 @@ export default function CameraItem({ open, handleClose }) {
                         <CancelPresentationIcon/>
                     </IconButton>
                 </Box>
-                <Typography marginTop={2} variant="h4">Add via Photo</Typography>
+                <Typography marginTop={2} variant="h4">Scan Item</Typography>
                 {isImage ?  (
                     <Box
                         width={250}
@@ -150,7 +212,8 @@ export default function CameraItem({ open, handleClose }) {
                                 Retake Photo
                             </Button>
                             <Button 
-                                variant="contained" 
+                                variant="contained"
+                                onClick={handleConfirm} 
                             >
                                 Confirm
                             </Button>
