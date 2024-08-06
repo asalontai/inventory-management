@@ -8,6 +8,7 @@ import { auth, firestore, storage } from "@/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import Image from "next/image";
 
 export default function CameraItem({ open, handleClose, refreshInventory }) {
     const [itemName, setItemName] = useState("");
@@ -142,14 +143,11 @@ export default function CameraItem({ open, handleClose, refreshInventory }) {
                             marginTop: "15px"
                         }}
                     >
-                        <img
+                        <Image
                             src={image}
                             alt="Captured"
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
-                            }}
+                            height={300}
+                            width={250}
                         />
                     </Box>
                 ) : (
