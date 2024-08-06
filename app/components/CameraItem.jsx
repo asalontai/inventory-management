@@ -20,12 +20,6 @@ export default function CameraItem({ open, handleClose, refreshInventory }) {
     const [cameras, setCameras] = useState([]);
     const [currentCamera, setCurrentCamera] = useState(0)
 
-    useEffect(() => {
-        if (user) {
-          updatedInventory(user.uid);
-        }
-    }, [user]);
-
     const handleTakePhoto = () => {
         const photo = camera.current.takePhoto();
 
