@@ -183,7 +183,7 @@ export default function SignIn() {
           {processing ? "Signing In..." : "Sign In"}
         </Button>
         <Box display={"flex"} gap={1}>
-          <Typography>Don't have an account?</Typography>
+          <Typography>Don&apos;t have an account?</Typography>
           <Link href={"/sign-up"} className="custom-link">
             Create an account
           </Link>
