@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import { auth, firestore } from "@/firebase";
 import { useAuthState } from "react-firebase-hooks/auth"
-import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
@@ -28,6 +27,7 @@ import AddItem from "./components/AddItem";
 import CountDisplay from "./components/CountDisplay";
 import SearchBar from "./components/SearchBar";
 import CameraItem from "./components/CameraItem";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [user, loading] = useAuthState(auth);
