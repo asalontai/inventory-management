@@ -2,6 +2,7 @@ import { auth } from "@/firebase";
 import { AccountCircle } from "@mui/icons-material";
 import {
   AppBar,
+  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -11,15 +12,18 @@ import {
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 export default function Navbar() {
+  const [user] = useAuthState(auth);
+
   const [anchor, setAnchor] = useState(null);
 
   const router = useRouter();
 
   const handleSignOut = async () => {
     signOut(auth).then(() => {
-      router.push("/sign-in");
+      router.push("/");
     });
   };
 
@@ -60,7 +64,7 @@ export default function Navbar() {
         >
           Pantry Tracker
         </Typography>
-        {auth && (
+        {user ? (
           <div style={{ marginLeft: "auto" }}>
             <IconButton
               size="large"
@@ -91,6 +95,15 @@ export default function Navbar() {
               <MenuItem onClick={handleAccount}>My account</MenuItem>
               <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
             </Menu>
+          </div>
+        ) : (
+          <div style={{ marginLeft: "auto" }}>
+            <Button href="/sign-in" color="inherit">
+              Login
+            </Button>
+            <Button href="/sign-up" color="inherit">
+              Sign Up
+            </Button>
           </div>
         )}
       </Toolbar>

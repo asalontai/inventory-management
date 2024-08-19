@@ -22,7 +22,7 @@ export default function SignUp() {
 
     useEffect(() => {
         if (!loading && user) {
-          router.push("/");
+          router.push("/dashboard");
         }
     }, [loading, user, router]);
 
@@ -61,7 +61,7 @@ export default function SignUp() {
         try {
             await signInWithPopup(auth, googleProvider);
             console.log("User signed in with Google");
-            router.push('/');
+            router.push('/dashboard');
         } catch (error) {
             setError(error.message)
             console.log("Error signing in with Google:", error.message);
