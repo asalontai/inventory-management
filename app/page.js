@@ -3,9 +3,19 @@
 import { Box, Button, Container, Grid, Typography } from "@mui/material";
 import Navbar from "./components/Navbar";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "@/firebase";
 
 export default function Home() {
+  const [user] = useAuthState(auth)
   const router = useRouter()
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, router]);
 
   return (
     <Box width={"100vw"} sx={{ userSelect: "none", }} >
